@@ -1,7 +1,6 @@
 "use strict";
 /*
 To Do:
-- Update collision function (hasCollided) - doesn't work when init in main()
 - Function to add generate points, growing snake and add score
 */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -49,8 +48,8 @@ class Snake {
     }
     drawSnake() {
         this.snakeParts.forEach(snakePart => {
-            this.canvas.ctx.fillStyle = 'lightblue';
-            this.canvas.ctx.strokeStyle = 'darkblue';
+            this.canvas.ctx.fillStyle = 'lightgreen';
+            this.canvas.ctx.strokeStyle = 'darkgreen';
             this.canvas.ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
             this.canvas.ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
         });
@@ -105,11 +104,40 @@ class Snake {
 __decorate([
     AutoBind
 ], Snake.prototype, "changeDirection", null);
+class Points {
+    constructor() {
+        this.canvas = new Canvas;
+        this.snake = new Snake;
+        this.pointX = this.random(0, this.canvas.snakeboard.width - 10);
+        this.pointY = this.random(0, this.canvas.snakeboard.height - 10);
+        this.generatePoints();
+    }
+    random(min, max) {
+        return Math.round((Math.random() * (max - min) + min) / 10) * 10;
+    }
+    generatePoints() {
+        this.pointX = this.random(0, this.canvas.snakeboard.width - 10);
+        this.pointY = this.random(0, this.canvas.snakeboard.height - 10);
+        this.snake.snakeParts.forEach(snakePart => {
+            const hasEaten = snakePart.x == this.pointX && snakePart.y == this.pointY;
+            if (hasEaten)
+                this.generatePoints();
+        });
+    }
+    drawPoints() {
+        this.canvas.ctx.fillStyle = 'lightpink';
+        this.canvas.ctx.strokeStyle = 'darkred';
+        this.canvas.ctx.fillRect(this.pointX, this.pointY, 10, 10);
+        this.canvas.ctx.strokeRect(this.pointX, this.pointY, 10, 10);
+    }
+}
 class Game {
     constructor() {
         this.canvas = new Canvas();
         this.snake = new Snake();
+        this.points = new Points();
         this.main();
+        this.points.generatePoints();
     }
     main() {
         setTimeout(() => {
@@ -117,6 +145,7 @@ class Game {
                 return;
             this.snake.isDirectionChanging = false;
             this.canvas.clearCanvas();
+            this.points.drawPoints();
             this.snake.moveSnake();
             this.snake.drawSnake();
             this.main();

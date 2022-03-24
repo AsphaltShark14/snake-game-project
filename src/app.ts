@@ -1,6 +1,8 @@
 /* 
 To Do: 
-- Function to add generate points, growing snake and add score
+- Growing Snake
+- Adding Points
+-Update Scoreboard
 */
 
 type Coordinates = { x: number, y: number };
@@ -59,8 +61,8 @@ class Snake {
 
     drawSnake() {
         this.snakeParts.forEach(snakePart => {
-            this.canvas.ctx.fillStyle = 'lightblue';  
-            this.canvas.ctx.strokeStyle = 'darkblue';
+            this.canvas.ctx.fillStyle = 'lightgreen';  
+            this.canvas.ctx.strokeStyle = 'darkgreen';
             this.canvas.ctx.fillRect(snakePart.x, snakePart.y, 10, 10);  
             this.canvas.ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
         });
@@ -103,11 +105,11 @@ class Snake {
             if (collision) return true
   }
         
-        const head: Coordinates = this.snakeParts[0];
-        const leftWall: Boolean = head.x < 0;
-        const rightWall: Boolean = head.x > this.canvas.snakeboard.width -10;
-        const topWall: Boolean = head.y < 0;
-        const bottomWall: Boolean = head.y > this.canvas.snakeboard.height -10;
+        const head = this.snakeParts[0];
+        const leftWall = head.x < 0;
+        const rightWall = head.x > this.canvas.snakeboard.width -10;
+        const topWall = head.y < 0;
+        const bottomWall = head.y > this.canvas.snakeboard.height -10;
 
         return leftWall || rightWall || topWall || bottomWall;
         
@@ -119,15 +121,55 @@ class Snake {
 
 }
 
+class Points {
+    canvas: Canvas;
+    snake: Snake;
+    pointX: number;
+    pointY: number;
+
+    constructor() {
+        this.canvas = new Canvas;
+        this.snake = new Snake;
+        this.pointX = this.random(0, this.canvas.snakeboard.width - 10);
+        this.pointY = this.random(0, this.canvas.snakeboard.height - 10);
+
+        this.generatePoints();
+    }
+
+    private random(min: number,max: number) {
+        return Math.round((Math.random() * (max - min) + min) / 10) * 10;
+    }
+
+    generatePoints() {
+        this.pointX = this.random(0, this.canvas.snakeboard.width - 10);
+        this.pointY = this.random(0, this.canvas.snakeboard.height - 10);
+
+        this.snake.snakeParts.forEach(snakePart => {
+            const hasEaten = snakePart.x == this.pointX && snakePart.y == this.pointY;
+            if (hasEaten) this.generatePoints();
+        })
+    }
+
+    drawPoints() {
+        this.canvas.ctx.fillStyle = 'lightpink';
+        this.canvas.ctx.strokeStyle = 'darkred';
+        this.canvas.ctx.fillRect(this.pointX, this.pointY, 10, 10);
+        this.canvas.ctx.strokeRect(this.pointX, this.pointY, 10, 10);
+    }
+}
+
 class Game {
 
     canvas: Canvas;
     snake: Snake;
+    points: Points;
 
     constructor() {
         this.canvas = new Canvas();
         this.snake = new Snake();
+        this.points = new Points();
 
+        this.points.generatePoints();
         this.main();
     }
 
@@ -137,6 +179,7 @@ class Game {
 
             this.snake.isDirectionChanging = false;
             this.canvas.clearCanvas();
+            this.points.drawPoints();
             this.snake.moveSnake();
             this.snake.drawSnake();
 
