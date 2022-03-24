@@ -1,8 +1,8 @@
 /* 
 To Do: 
-- Growing Snake
-- Adding Points
--Update Scoreboard
+- update reset fn
+- reset after collision
+-style & add listener to new game button
 */
 
 type Coordinates = { x: number, y: number };
@@ -68,11 +68,6 @@ class Snake {
         });
     }
 
-    moveSnake() {
-        const head: Coordinates = { x: this.snakeParts[0].x + this.dx, y: this.snakeParts[0].y + this.dy };
-        this.snakeParts.unshift(head);
-        this.snakeParts.pop();
-    }
 
     @AutoBind
     changeDirection(e: KeyboardEvent) {
@@ -121,19 +116,25 @@ class Snake {
 
 }
 
-class Points {
+class Game {
+
     canvas: Canvas;
     snake: Snake;
     pointX: number;
     pointY: number;
+    score: number;
+    scoreBoard: HTMLElement;
 
     constructor() {
-        this.canvas = new Canvas;
-        this.snake = new Snake;
+        this.canvas = new Canvas();
+        this.snake = new Snake();
         this.pointX = this.random(0, this.canvas.snakeboard.width - 10);
         this.pointY = this.random(0, this.canvas.snakeboard.height - 10);
+        this.score = 0;
+        this.scoreBoard = document.querySelector('span')!;
 
         this.generatePoints();
+        this.main();
     }
 
     private random(min: number,max: number) {
@@ -156,21 +157,26 @@ class Points {
         this.canvas.ctx.fillRect(this.pointX, this.pointY, 10, 10);
         this.canvas.ctx.strokeRect(this.pointX, this.pointY, 10, 10);
     }
-}
 
-class Game {
+    moveSnake() {
+        const head: Coordinates = {
+            x: this.snake.snakeParts[0].x + this.snake.dx,
+            y: this.snake.snakeParts[0].y + this.snake.dy
+        };
+        this.snake.snakeParts.unshift(head);
+        const isPointGained =
+            this.snake.snakeParts[0].x === this.pointX &&
+            this.snake.snakeParts[0].y === this.pointY;
+        
+        if (isPointGained) {
+            this.generatePoints();
+            this.score += 5;
+            this.scoreBoard.textContent = this.score.toString();
 
-    canvas: Canvas;
-    snake: Snake;
-    points: Points;
-
-    constructor() {
-        this.canvas = new Canvas();
-        this.snake = new Snake();
-        this.points = new Points();
-
-        this.points.generatePoints();
-        this.main();
+        } else {
+            this.snake.snakeParts.pop();
+        }
+        
     }
 
     main() {
@@ -179,15 +185,25 @@ class Game {
 
             this.snake.isDirectionChanging = false;
             this.canvas.clearCanvas();
-            this.points.drawPoints();
-            this.snake.moveSnake();
+            this.drawPoints();
+            this.moveSnake();
             this.snake.drawSnake();
 
             this.main();
         },100)
     }
+
+    reset() {
+        this.snake.snakeParts = [  
+            {x: 200, y: 200},  
+            {x: 190, y: 200},  
+            {x: 180, y: 200},  
+            {x: 170, y: 200},  
+            {x: 160, y: 200},
+        ];
+        this.score = 0;
+        this.main();
+    }
 }
 
 const newGame = new Game();
-
-
