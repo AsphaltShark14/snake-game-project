@@ -1,4 +1,10 @@
-type Coordinates = {x: number, y: number};
+/* 
+To Do: 
+- Update collision function (hasCollided) - doesn't work when init in main()
+- Function to add generate points, growing snake and add score
+*/
+
+type Coordinates = { x: number, y: number };
 
 function AutoBind(_: any, __: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
