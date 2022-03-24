@@ -1,6 +1,5 @@
 /* 
 To Do: 
-- Update collision function (hasCollided) - doesn't work when init in main()
 - Function to add generate points, growing snake and add score
 */
 
@@ -52,7 +51,7 @@ class Snake {
         ];
         this.canvas = new Canvas;
         this.dx = 10;
-        this.dy = 1;
+        this.dy = 0;
         this.isDirectionChanging = false;
 
         this.setup();
@@ -68,7 +67,7 @@ class Snake {
     }
 
     moveSnake() {
-        const head: Coordinates = {x: this.snakeParts[0].x + this.dx, y: this.snakeParts[0].y + this.dy}
+        const head: Coordinates = { x: this.snakeParts[0].x + this.dx, y: this.snakeParts[0].y + this.dy };
         this.snakeParts.unshift(head);
         this.snakeParts.pop();
     }
@@ -77,37 +76,38 @@ class Snake {
     changeDirection(e: KeyboardEvent) {
         if(this.isDirectionChanging) return;
         this.isDirectionChanging = true;
-        if(e.keyCode === 39) {
-            // right key
+
+        const goingUp: boolean = this.dy === -10;
+        const goingDown: boolean = this.dy === 10;
+        const goingLeft: boolean = this.dx === -10;
+        const goingRight: boolean = this.dx === 10;
+
+        if(e.key == 'ArrowRight' && !goingLeft) {
             this.dx = 10;
             this.dy = 0;
-          } else if (e.keyCode === 38) {
-            // up key
+          } else if (e.key == 'ArrowUp' && !goingDown) {
             this.dx = 0;
             this.dy = -10;
-          } else if (e.keyCode === 37) {
-            // left key
+          } else if (e.key === "ArrowLeft" && !goingRight) {
             this.dx = -10;
             this.dy = 0;
-          } else if (e.keyCode === 40) {
-            // down key
+          } else if (e.key == 'ArrowDown' && !goingUp) {
            this. dx = 0;
             this.dy = 10;
           }
     }
 
     hasCollided(): Boolean {
-        this.snakeParts.map((_: Coordinates,i: number,arr: Coordinates[]) => {
-            if(i == 0) return;
-            const headCollide: Boolean = arr[i].x == arr[0].x && arr[i].y == arr[0].y;
-            if(headCollide) return true;
-        })
+        for (let i = 4; i < this.snakeParts.length; i++) {    
+            const collision: boolean = this.snakeParts[i].x === this.snakeParts[0].x && this.snakeParts[i].y === this.snakeParts[0].y;
+            if (collision) return true
+  }
         
         const head: Coordinates = this.snakeParts[0];
         const leftWall: Boolean = head.x < 0;
         const rightWall: Boolean = head.x > this.canvas.snakeboard.width -10;
-        const topWall: Boolean = head.y > 0;
-        const bottomWall: Boolean = head.y < this.canvas.snakeboard.height -10;
+        const topWall: Boolean = head.y < 0;
+        const bottomWall: Boolean = head.y > this.canvas.snakeboard.height -10;
 
         return leftWall || rightWall || topWall || bottomWall;
         
@@ -133,7 +133,7 @@ class Game {
 
     main() {
         setTimeout(() => {
-            // if(this.snake.hasCollided()) return;
+            if(this.snake.hasCollided()) return;
 
             this.snake.isDirectionChanging = false;
             this.canvas.clearCanvas();
