@@ -13,14 +13,12 @@ function AutoBind(_: any, __: string, descriptor: PropertyDescriptor) {
 
 class Canvas {
 
-    private snakeboard: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D;
+    snakeboard: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
 
     constructor() {
         this.snakeboard = document.querySelector('#game-canvas')!;
-        this.ctx = this.snakeboard.getContext('2d');
-        
-
+        this.ctx = this.snakeboard.getContext('2d')!;
     }
 
     clearCanvas() {
@@ -54,17 +52,13 @@ class Snake {
         this.setup();
     }
 
-    private drawPartOfSnake(snakePart: Coordinates) {
-        {  
+    drawSnake() {
+        this.snakeParts.forEach(snakePart => {
             this.canvas.ctx.fillStyle = 'lightblue';  
-            this.canvas.ctx.strokestyle = 'darkblue';
+            this.canvas.ctx.strokeStyle = 'darkblue';
             this.canvas.ctx.fillRect(snakePart.x, snakePart.y, 10, 10);  
             this.canvas.ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
-          }
-    }
-
-    drawSnake() {
-        this.snakeParts.forEach(this.drawPartOfSnake);
+        });
     }
 
     moveSnake() {
@@ -74,42 +68,43 @@ class Snake {
     }
 
     @AutoBind
-    changeDirection(e: Event) {
+    changeDirection(e: KeyboardEvent) {
         if(this.isDirectionChanging) return;
         this.isDirectionChanging = true;
         if(e.keyCode === 39) {
             // right key
-            dx = 10;
-            dy = 0;
+            this.dx = 10;
+            this.dy = 0;
           } else if (e.keyCode === 38) {
             // up key
-            dx = 0;
-            dy = -10;
+            this.dx = 0;
+            this.dy = -10;
           } else if (e.keyCode === 37) {
             // left key
-            dx = -10;
-            dy = 0;
+            this.dx = -10;
+            this.dy = 0;
           } else if (e.keyCode === 40) {
             // down key
-            dx = 0;
-            dy = 10;
+           this. dx = 0;
+            this.dy = 10;
           }
     }
 
-    hasCollided() {
-        this.snakeParts.map((chunk,i) => {
-            if(i == 0) continue;
-            const headCollide: Boolean = chunk[i].x == chunk[0].x && chunk[i].y == chunk[0].y;
+    hasCollided(): Boolean {
+        this.snakeParts.map((_: Coordinates,i: number,arr: Coordinates[]) => {
+            if(i == 0) return;
+            const headCollide: Boolean = arr[i].x == arr[0].x && arr[i].y == arr[0].y;
             if(headCollide) return true;
-
-            const head: Coordinates = chunk[0];
-            const leftWall: Boolean = head.x < 0;
-            const rightWall: Boolean = head.x > this.canvas.snakeboard.width -10;
-            const topWall: Boolean = head.y > 0;
-            const bottomWall: Boolean = head.y < this.canvas.snakeboard.height -10;
-
-            return leftWall || rightWall || topWall || bottomWall;
         })
+        
+        const head: Coordinates = this.snakeParts[0];
+        const leftWall: Boolean = head.x < 0;
+        const rightWall: Boolean = head.x > this.canvas.snakeboard.width -10;
+        const topWall: Boolean = head.y > 0;
+        const bottomWall: Boolean = head.y < this.canvas.snakeboard.height -10;
+
+        return leftWall || rightWall || topWall || bottomWall;
+        
     }
 
     setup() {
@@ -132,7 +127,7 @@ class Game {
 
     main() {
         setTimeout(() => {
-            if(this.snake.hasCollided()) return;
+            // if(this.snake.hasCollided()) return;
 
             this.snake.isDirectionChanging = false;
             this.canvas.clearCanvas();
@@ -143,3 +138,7 @@ class Game {
         },100)
     }
 }
+
+const newGame = new Game();
+
+
