@@ -96,7 +96,9 @@ class Snake {
 
     hasCollided(): Boolean {
         for (let i = 4; i < this.snakeParts.length; i++) {    
-            const collision: boolean = this.snakeParts[i].x === this.snakeParts[0].x && this.snakeParts[i].y === this.snakeParts[0].y;
+            const collision: boolean =
+                this.snakeParts[i].x === this.snakeParts[0].x &&
+                this.snakeParts[i].y === this.snakeParts[0].y;
             if (collision) return true
   }
         
@@ -135,6 +137,7 @@ class Game {
 
         this.generatePoints();
         this.main();
+        this.resetButtonHanlder();
     }
 
     private random(min: number,max: number) {
@@ -193,6 +196,7 @@ class Game {
         },100)
     }
 
+    @AutoBind
     reset() {
         this.snake.snakeParts = [  
             {x: 200, y: 200},  
@@ -201,8 +205,17 @@ class Game {
             {x: 170, y: 200},  
             {x: 160, y: 200},
         ];
+        this.snake.dx = 10;
+        this.snake.dy = 0;
+        this.snake.isDirectionChanging = false;
         this.score = 0;
         this.main();
+    }
+
+    resetButtonHanlder() {
+        const resetButton: HTMLButtonElement = document.querySelector('#start')!;
+
+        resetButton.addEventListener('click', this.reset);
     }
 }
 

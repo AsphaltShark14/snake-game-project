@@ -83,7 +83,8 @@ class Snake {
     }
     hasCollided() {
         for (let i = 4; i < this.snakeParts.length; i++) {
-            const collision = this.snakeParts[i].x === this.snakeParts[0].x && this.snakeParts[i].y === this.snakeParts[0].y;
+            const collision = this.snakeParts[i].x === this.snakeParts[0].x &&
+                this.snakeParts[i].y === this.snakeParts[0].y;
             if (collision)
                 return true;
         }
@@ -111,6 +112,7 @@ class Game {
         this.scoreBoard = document.querySelector('span');
         this.generatePoints();
         this.main();
+        this.resetButtonHanlder();
     }
     random(min, max) {
         return Math.round((Math.random() * (max - min) + min) / 10) * 10;
@@ -167,8 +169,18 @@ class Game {
             { x: 170, y: 200 },
             { x: 160, y: 200 },
         ];
+        this.snake.dx = 10;
+        this.snake.dy = 0;
+        this.snake.isDirectionChanging = false;
         this.score = 0;
         this.main();
     }
+    resetButtonHanlder() {
+        const resetButton = document.querySelector('#start');
+        resetButton.addEventListener('click', this.reset);
+    }
 }
+__decorate([
+    AutoBind
+], Game.prototype, "reset", null);
 const newGame = new Game();
